@@ -127,14 +127,15 @@
             style="color: var(--accent-green); border-bottom: 1px solid #2d4356; padding-bottom: 10px;">
             <i class="fas fa-user-plus me-2"></i> Crear Nuevo Usuario
         </h5>
-        <form id="formNuevoUsuario">
+        <form id="formNuevoUsuario" autocomplete="off">
             <div class="row g-3">
                 <div class="col-md-5">
-                    <input type="text" class="form-control" id="newUsername" placeholder="Nombre de usuario" required>
+                    <input type="text" class="form-control" id="newUsername" placeholder="Nombre de usuario"
+                        autocomplete="new-password" required>
                 </div>
                 <div class="col-md-5">
                     <input type="password" class="form-control" id="newPassword" placeholder="Contraseña segura"
-                        required>
+                        autocomplete="new-password" required>
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn w-100"

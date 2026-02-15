@@ -185,7 +185,7 @@
                     </span>
                     <input type="text" id="buscadorInventario" class="form-control"
                         placeholder="Buscar por Nombre, SKU o Categoría..."
-                        style="background-color: var(--bg-card); border-color: #2d4356; color: var(--text-light);">
+                        style="background-color: var(--bg-card); border-color: #2d4356; color: #ffffff !important;">
                 </div>
             </div>
         </div>
@@ -196,11 +196,11 @@
                     <thead>
                         <tr>
                             <th>SKU</th>
-                            <th>PRODUCT ITEM</th>
-                            <th>CATEGORY</th>
-                            <th>UNIT PRICE</th>
-                            <th class="text-center">QTY IN STOCK</th>
-                            <th class="text-end">ACTION</th>
+                            <th>PRODUCTO</th>
+                            <th>CATEGORÍA</th>
+                            <th>PRECIO UNITARIO</th>
+                            <th class="text-center">STOCK</th>
+                            <th class="text-end">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-productos">
@@ -253,29 +253,34 @@
                 <div class="modal-body">
                     <form id="formMovimiento">
                         <div class="mb-3">
-                            <label class="small text-muted mb-1">Seleccionar Producto</label>
-                            <select class="form-select" id="movProducto" required>
-                                <option value="">Cargando catálogo...</option>
+                            <label class="form-label" style="color: var(--text-muted);">Seleccionar Producto</label>
+                            <select class="form-select" id="movProducto" required
+                                style="background-color: #182631; color: #fff; border-color: #2d4356;">
+                                <option value="">Buscar producto...</option>
                             </select>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <label class="small text-muted mb-1">Tipo de Operación</label>
-                                <select class="form-select" id="movTipo" required>
-                                    <option value="ENTRADA"> ENTRADA (Compra)</option>
-                                    <option value="SALIDA"> SALIDA (Venta)</option>
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                <label class="small text-muted mb-1">Cantidad</label>
-                                <input type="number" class="form-control" id="movCantidad" min="1" required>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-muted);">Tipo de Operación</label>
+                            <select class="form-select" id="movTipo" required
+                                style="background-color: #182631; color: #fff; border-color: #2d4356;">
+                                <option value="ENTRADA">ENTRADA (Compra / Devolución)</option>
+                                <option value="SALIDA">SALIDA (Venta / Merma)</option>
+                            </select>
                         </div>
-                        <div class="mb-4">
-                            <label class="small text-muted mb-1">Referencia / Documento</label>
-                            <input type="text" class="form-control" id="movMotivo" placeholder="Ej: Factura 001">
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-muted);">Cantidad</label>
+                            <input type="number" class="form-control" id="movCantidad" min="1" required
+                                style="background-color: #182631; color: #fff; border-color: #2d4356;">
                         </div>
-                        <button type="submit" class="btn btn-kardex w-100">Procesar Transacción</button>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-muted);">Referencia / Documento</label>
+                            <input type="text" class="form-control" id="movMotivo"
+                                placeholder="Ej: Factura 1234, Venta mostrador..."
+                                style="background-color: #182631; color: #fff; border-color: #2d4356;">
+                        </div>
+                        <button type="submit" class="btn w-100"
+                            style="background-color: var(--accent-cyan); color: #000; font-weight: bold;">Procesar
+                            Transacción</button>
                     </form>
                 </div>
             </div>
@@ -434,7 +439,7 @@
                         <td><span class="badge" style="background-color: #2d4356; color: #fff">${p.sku}</span></td>
                         <td class="fw-bold" style="color: #000;">${p.nombre}</td>
                         <td><small style="color: #8ca3b8">${p.categoria_nombre || 'General'}</small></td>
-                        <td class="fw-bold" style="color: #e2e8f0;">${formatoCLP.format(p.precio)}</td>
+                        <td class="fw-bold" style="color: #000000;">${formatoCLP.format(p.precio)}</td>
                         <td class="text-center fw-bold" style="color: ${stockColor}; font-size: 1.1rem;">${p.stock}</td>
                         <td class="text-end">
                             <button class="btn btn-sm me-1" style="color: var(--accent-cyan); border: 1px solid var(--accent-cyan);" onclick="verHistorial(${p.id}, '${p.nombre}')" title="Ver Historial"><i class="fas fa-history"></i></button>
