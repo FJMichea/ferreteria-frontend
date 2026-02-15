@@ -193,27 +193,36 @@
 
     <div class="container-fluid px-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold m-0" style="color: var(--accent-green);">Inventario Movimiento y Lista</h5>
-            <div class="d-flex gap-2">
-                <button class="btn btn-kardex btn-sm px-3 shadow-sm" data-bs-toggle="modal"
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
+            <div class="d-flex flex-wrap justify-content-center gap-2 w-100">
+                <button class="btn btn-sm px-3 shadow-sm"
+                    style="background-color: var(--accent-cyan); color: #000; font-weight: bold;" data-bs-toggle="modal"
                     data-bs-target="#modalMovimiento">
-                    <i class="fas fa-exchange-alt me-2"></i> Registrar Movimiento
+                    <i class="fas fa-exchange-alt me-1"></i> Registrar Movimiento
                 </button>
                 <button class="btn btn-outline-info btn-sm px-3 shadow-sm" onclick="abrirLibroMovimientos()">
                     <i class="fas fa-book me-1"></i> Libro Movimientos
                 </button>
-                <button class="btn btn-outline-success btn-sm px-3" onclick="exportarExcel()"><i
-                        class="fas fa-file-excel me-1"></i> Excel</button>
-                <button class="btn btn-outline-danger btn-sm px-3" onclick="exportarPDF()"><i
-                        class="fas fa-file-pdf me-1"></i> PDF</button>
-                <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalProducto">
-                    <i class="fas fa-plus"></i> Nuevo Item
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-center gap-2 w-100">
+                <button class="btn btn-sm px-3 shadow-sm"
+                    style="background-color: #2ed573; color: #000; font-weight: bold;" onclick="exportarExcel()">
+                    <i class="fas fa-file-excel me-1"></i> Excel
+                </button>
+                <button class="btn btn-sm px-3 shadow-sm"
+                    style="background-color: #ff4757; color: #fff; font-weight: bold;" onclick="exportarPDF()">
+                    <i class="fas fa-file-pdf me-1"></i> PDF
+                </button>
+                <button class="btn btn-sm px-3 shadow-sm"
+                    style="background-color: #a55eea; color: #fff; font-weight: bold;" data-bs-toggle="modal"
+                    data-bs-target="#modalProducto">
+                    <i class="fas fa-plus me-1"></i> Nuevo Item
                 </button>
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-md-6 col-lg-4">
+            <div class="col-12 col-md-6 col-lg-4">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text"
                         style="background-color: var(--bg-card); border-color: #2d4356; color: var(--accent-cyan);">
