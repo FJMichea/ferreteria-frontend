@@ -222,7 +222,7 @@
 
 
     <script>
-        // --- LÓGICA PARA CREAR NUEVO USUARIO ---
+
         document.getElementById('formNuevoUsuario').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
@@ -239,16 +239,25 @@
                     body: JSON.stringify({ username, password })
                 });
 
-                const data = await res.json();
 
-                if (res.ok) {
-                    alert('¡Usuario creado exitosamente! Ya puede iniciar sesión.');
-                    document.getElementById('formNuevoUsuario').reset();
+                const contentType = res.headers.get("content-type");
+
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const data = await res.json();
+                    if (res.ok) {
+                        alert('¡Usuario creado exitosamente! Ya puede iniciar sesión.');
+                        document.getElementById('formNuevoUsuario').reset();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
                 } else {
-                    alert('Error: ' + data.error);
+
+                    const textError = await res.text();
+                    console.error("Respuesta del servidor:", textError);
+                    alert('Error del servidor 🚨. Revisa la consola (F12) o verifica que Render terminó el Deploy del backend.');
                 }
             } catch (err) {
-                alert('Fallo de conexión con el servidor.');
+                alert('Fallo total de red: ' + err.message);
             } finally {
                 btn.innerText = 'Crear';
                 btn.disabled = false;
