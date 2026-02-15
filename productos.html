@@ -374,15 +374,33 @@
         }
 
 
+
         document.getElementById('formMovimiento').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const movimiento = {
-                producto: document.getElementById('movProducto').value,
-                tipo: document.getElementById('movTipo').value,
-                cantidad: document.getElementById('movCantidad').value,
-                motivo: document.getElementById('movMotivo').value,
-                usuario: localStorage.getItem('username') || 'Admin'
-            };
+
+            const productoId = document.getElementById('movProducto').value;
+            const tipo = document.getElementById('movTipo').value;
+            const cantidad = parseInt(document.getElementById('movCantidad').value);
+            const motivo = document.getElementById('movMotivo').value;
+            const usuario = localStorage.getItem('username') || 'Admin';
+
+
+            if (tipo === 'SALIDA') {
+                const productoSeleccionado = productosGlobal.find(p => p.id == productoId);
+                if (productoSeleccionado && cantidad > productoSeleccionado.stock) {
+                    Swal.fire({
+                        title: '¡Stock Insuficiente!',
+                        html: `Intentas retirar <b>${cantidad}</b> unidades, pero solo hay <b>${productoSeleccionado.stock}</b> en inventario.`,
+                        icon: 'warning',
+                        background: '#223442',
+                        color: '#ff4757',
+                        confirmButtonColor: '#2d4356'
+                    });
+                    return; // Detiene la ejecución, no envía nada al servidor
+                }
+            }
+
+            const movimiento = { producto: productoId, tipo, cantidad, motivo, usuario };
 
             try {
                 const res = await fetch(API_URL + 'movimientos/', {
