@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración | Ferretería</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* PALETA DE COLORES DARK ANALYTICS */
+        :root {
+            --bg-main: #182631;
+            --bg-card: #223442;
+            --text-light: #e2e8f0;
+            --text-muted: #8ca3b8;
+            --accent-cyan: #00cec9;
+            --accent-green: #2ed573;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+        }
+
+        /* HEADER IDENTICO */
+        .top-header {
+            background-color: #131e27;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-cyan);
+            margin-bottom: 20px;
+        }
+
+        .logo-box {
+            background: var(--accent-cyan);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: auto;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent-cyan);
+        }
+
+        /* TARJETAS DE PERFIL */
+        .admin-card {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid #2d4356;
+            margin-bottom: 20px;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, #0abde3 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 4px 10px rgba(0, 206, 201, 0.4);
+        }
+
+        /* FORMULARIOS OSCUROS */
+        .form-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            background-color: #182631;
+            border: 1px solid #2d4356;
+            color: white;
+        }
+
+        .form-control:read-only {
+            background-color: #131e27;
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .form-control:focus {
+            background-color: #182631;
+            color: white;
+            border-color: var(--accent-cyan);
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // GUARDIA DE SEGURIDAD
+        if (!localStorage.getItem('accessToken')) window.location.href = 'login.html';
+    </script>
+    <div class="admin-card mt-4">
+        <h5 class="fw-bold mb-4"
+            style="color: var(--accent-green); border-bottom: 1px solid #2d4356; padding-bottom: 10px;">
+            <i class="fas fa-user-plus me-2"></i> Crear Nuevo Usuario
+        </h5>
+        <form id="formNuevoUsuario">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <input type="text" class="form-control" id="newUsername" placeholder="Nombre de usuario" required>
+                </div>
+                <div class="col-md-5">
+                    <input type="password" class="form-control" id="newPassword" placeholder="Contraseña segura"
+                        required>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn w-100"
+                        style="background-color: var(--accent-green); color: #000; font-weight: bold;">Crear</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="top-header">
+        <div class="logo-box"><i class="fas fa-boxes"></i></div>
+        <h3 class="m-0 fw-bold text-white tracking-wide" style="letter-spacing: 1px;">Inventario <span
+                style="font-weight: 300;">Admin</span></h3>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="productos.html">Inventario</a>
+            <a href="perfil.html" class="active">Administración</a>
+            <a href="#" onclick="cerrarSesion()" class="text-danger ms-3"><i class="fas fa-power-off"></i> Salir</a>
+        </div>
+    </div>
+
+    <div class="container px-4 mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="admin-card text-center">
+                    <div class="avatar-circle">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-1" id="displayUsername">Cargando...</h4>
+                    <span class="badge"
+                        style="background-color: rgba(46, 213, 115, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green);">
+                        Administrador del Sistema
+                    </span>
+
+                    <hr style="border-color: #2d4356; margin: 25px 0;">
+
+                    <div class="d-flex justify-content-between text-start mb-2">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Estado de Cuenta:</span>
+                        <span class="text-success fw-bold" style="font-size: 0.85rem;"><i
+                                class="fas fa-check-circle"></i> Activa</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-start">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Último Acceso:</span>
+                        <span class="text-light fw-bold" style="font-size: 0.85rem;" id="loginTime">Hoy</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="admin-card">
+                    <h5 class="fw-bold mb-4"
+                        style="color: var(--accent-cyan); border-bottom: 1px solid #2d4356; padding-bottom: 10px;">
+                        <i class="fas fa-shield-alt me-2"></i> Detalles de Seguridad y Sesión
+                    </h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre de Usuario (Credencial)</label>
+                            <input type="text" class="form-control" id="inputUser" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nivel de Permisos</label>
+                            <input type="text" class="form-control" value="Acceso Total (Lectura / Escritura)" readonly>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <label class="form-label">Token de Autorización JWT (JSON Web Token)</label>
+                            <input type="text" class="form-control" id="inputToken" readonly
+                                style="font-family: monospace; font-size: 0.85rem;">
+                            <small class="text-muted mt-1 d-block"><i class="fas fa-info-circle"></i> Este token asegura
+                                tu conexión con el backend en Render.</small>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <label class="form-label">URL del Backend Conectado</label>
+                            <input type="text" class="form-control"
+                                value="https://api-ferreteria-michea.onrender.com/api/" readonly
+                                style="color: #e2e8f0; font-weight: normal;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        // --- LÓGICA PARA CREAR NUEVO USUARIO ---
+        document.getElementById('formNuevoUsuario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerText = 'Creando...';
+            btn.disabled = true;
+
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+
+            try {
+                const res = await fetch('https://api-ferreteria-michea.onrender.com/api/crear-usuario/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('¡Usuario creado exitosamente! Ya puede iniciar sesión.');
+                    document.getElementById('formNuevoUsuario').reset();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                alert('Fallo de conexión con el servidor.');
+            } finally {
+                btn.innerText = 'Crear';
+                btn.disabled = false;
+            }
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const user = localStorage.getItem('username');
+            const token = localStorage.getItem('accessToken');
+
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+
+            document.getElementById('displayUsername').innerText = user.toUpperCase();
+            document.getElementById('inputUser').value = user;
+
+
+            if (token) {
+                document.getElementById('inputToken').value = "Bearer " + token.substring(0, 45) + "... [TOKEN CIFRADO]";
+            }
+
+
+            const ahora = new Date();
+            document.getElementById('loginTime').innerText = ahora.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        });
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+
+</html>

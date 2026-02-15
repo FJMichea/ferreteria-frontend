@@ -1,78 +1,199 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario | Ferretería Michea</title>
+    <title>Inventario | Ferretería</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
-        
-        /* Sidebar (Mismo estilo que index) */
-        #wrapper { display: flex; width: 100%; }
-        #sidebar-wrapper {
-            min-height: 100vh; width: 260px; background-color: #1e293b; color: #fff;
-            position: fixed; z-index: 1000;
-        }
-        .sidebar-heading { padding: 1.5rem; font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid #334155; }
-        .list-group-item { background-color: transparent; color: #94a3b8; border: none; padding: 1rem 1.5rem; }
-        .list-group-item:hover, .list-group-item.active { background-color: #0f172a; color: #fff; border-left: 4px solid #3b82f6; }
-        
-        #page-content-wrapper { margin-left: 260px; width: 100%; }
 
-        /* Estilos Tabla */
-        .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
-        .table thead th { background-color: #f8fafc; color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; border-bottom: 2px solid #e2e8f0; }
-        .action-btn { cursor: pointer; transition: transform 0.2s; }
-        .action-btn:hover { transform: scale(1.1); }
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        /* MISMA PALETA QUE INDEX */
+        :root {
+            --bg-main: #142634;
+            --bg-card: #223442;
+            --text-light: #e2e8f0;
+            --text-muted: #8ca3b8;
+            --accent-green: #2ed573;
+            --accent-cyan: #00cec9;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+        }
+
+        /* HEADER IDENTICO AL INDEX */
+        .top-header {
+            background-color: #131e27;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-cyan);
+            margin-bottom: 20px;
+        }
+
+        .logo-box {
+            background: var(--accent-cyan);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: auto;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent-cyan);
+        }
+
+        /* ESTILO DE TABLA DARK ANALYTICS */
+        .table-container {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #2d4356;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .table {
+            color: var(--text-light);
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #131e27;
+            color: var(--accent-cyan);
+            border-bottom: 2px solid #2d4356;
+            border-top: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody td {
+            border-bottom: 1px solid #2d4356;
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 206, 201, 0.05);
+        }
+
+        /* BOTONES ESTILIZADOS */
+        .btn-kardex {
+            background-color: var(--accent-cyan);
+            color: #000;
+            font-weight: bold;
+            border: none;
+        }
+
+        .btn-kardex:hover {
+            background-color: #00b3b0;
+            color: #140808;
+        }
+
+        /* MODALES OSCUROS */
+        .modal-content {
+            background-color: var(--bg-card);
+            color: var(--text-light);
+            border: 1px solid #2d4356;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #2d4356;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: #182631;
+            border: 1px solid #2d4356;
+            color: white;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #182631;
+            color: white;
+            border-color: var(--accent-cyan);
+            box-shadow: none;
+        }
     </style>
 </head>
-<body>
 
-    <div id="wrapper">
-        <div id="sidebar-wrapper">
-            <div class="sidebar-heading"><i class="fas fa-tools"></i> Ferr. Michea</div>
-            <div class="list-group list-group-flush mt-3">
-                <a href="index.html" class="list-group-item"><i class="fas fa-chart-pie me-3"></i> Dashboard BI</a>
-                <a href="productos.html" class="list-group-item active"><i class="fas fa-box-open me-3"></i> Inventario</a>
-                <a href="#" class="list-group-item"><i class="fas fa-users me-3"></i> Usuarios</a>
-                <a href="#" class="list-group-item mt-5 text-danger" onclick="cerrarSesion()">
-                    <i class="fas fa-sign-out-alt me-3"></i> Cerrar Sesión
-                </a>
+<body>
+    <script>if (!localStorage.getItem('accessToken')) window.location.href = 'login.html';</script>
+
+    <div class="top-header">
+        <div class="logo-box"><i class="fas fa-boxes"></i></div>
+        <h3 class="m-0 fw-bold text-white tracking-wide" style="letter-spacing: 1px;">Inventario <span
+                style="font-weight: 300;">Ferreteria</span></h3>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="productos.html" class="active">Inventario</a>
+            <a href="#" onclick="cerrarSesion()" class="text-danger"><i class="fas fa-power-off"></i> Salir</a>
+        </div>
+    </div>
+
+    <div class="container-fluid px-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold m-0" style="color: var(--accent-green);">Inventario Movimiento y Lista</h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-kardex btn-sm px-3 shadow-sm" data-bs-toggle="modal"
+                    data-bs-target="#modalMovimiento">
+                    <i class="fas fa-exchange-alt me-2"></i> Registrar Movimiento
+                </button>
+                <button class="btn btn-outline-success btn-sm px-3" onclick="exportarExcel()"><i
+                        class="fas fa-file-excel me-1"></i> Excel</button>
+                <button class="btn btn-outline-danger btn-sm px-3" onclick="exportarPDF()"><i
+                        class="fas fa-file-pdf me-1"></i> PDF</button>
+                <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalProducto">
+                    <i class="fas fa-plus"></i> Nuevo Item
+                </button>
             </div>
         </div>
 
-        <div id="page-content-wrapper">
-            <nav class="navbar navbar-light bg-white shadow-sm px-4 py-3 mb-4">
-                <h4 class="mb-0 fw-bold text-dark">Gestión de Inventario</h4>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProducto">
-                    <i class="fas fa-plus me-2"></i> Nuevo Producto
-                </button>
-            </nav>
-
-            <div class="container-fluid px-4">
-                <div class="table-card p-4">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>SKU</th>
-                                    <th>Producto</th>
-                                    <th>Categoría</th>
-                                    <th>Precio</th>
-                                    <th>Stock</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabla-productos">
-                                <tr><td colspan="6" class="text-center p-4">Cargando inventario... ⏳</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>PRODUCT ITEM</th>
+                            <th>CATEGORY</th>
+                            <th>UNIT PRICE</th>
+                            <th class="text-center">QTY IN STOCK</th>
+                            <th class="text-end">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-productos">
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">Cargando Base de Datos... <i
+                                    class="fas fa-spinner fa-spin"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -81,38 +202,63 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Agregar Producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" style="color: var(--accent-green);">Añadir al Catálogo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="formProducto">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="prodNombre" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">SKU (Código)</label>
-                            <input type="text" class="form-control" id="prodSku" required>
-                        </div>
+                        <div class="mb-2"><label class="small text-muted mb-1">Nombre</label><input type="text"
+                                class="form-control" id="prodNombre" required></div>
+                        <div class="mb-2"><label class="small text-muted mb-1">SKU</label><input type="text"
+                                class="form-control" id="prodSku" required></div>
                         <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Precio ($)</label>
-                                <input type="number" class="form-control" id="prodPrecio" required>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Stock Inicial</label>
-                                <input type="number" class="form-control" id="prodStock" required>
-                            </div>
+                            <div class="col-6 mb-2"><label class="small text-muted mb-1">Precio</label><input
+                                    type="number" class="form-control" id="prodPrecio" required></div>
+                            <div class="col-6 mb-2"><label class="small text-muted mb-1">Stock Inicial</label><input
+                                    type="number" class="form-control" id="prodStock" required></div>
                         </div>
+                        <div class="mb-4"><label class="small text-muted mb-1">Categoría</label><select
+                                class="form-select" id="prodCategoria" required></select></div>
+                        <button type="submit" class="btn btn-success w-100">Crear Registro</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalMovimiento" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="color: var(--accent-cyan);">Transacción de Inventario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formMovimiento">
                         <div class="mb-3">
-                            <label class="form-label">Categoría</label>
-                            <select class="form-select" id="prodCategoria" required>
-                                <option value="">Cargando categorías...</option>
+                            <label class="small text-muted mb-1">Seleccionar Producto</label>
+                            <select class="form-select" id="movProducto" required>
+                                <option value="">Cargando catálogo...</option>
                             </select>
                         </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success">Guardar Producto</button>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="small text-muted mb-1">Tipo de Operación</label>
+                                <select class="form-select" id="movTipo" required>
+                                    <option value="ENTRADA"> ENTRADA (Compra)</option>
+                                    <option value="SALIDA"> SALIDA (Venta)</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="small text-muted mb-1">Cantidad</label>
+                                <input type="number" class="form-control" id="movCantidad" min="1" required>
+                            </div>
                         </div>
+                        <div class="mb-4">
+                            <label class="small text-muted mb-1">Referencia / Documento</label>
+                            <input type="text" class="form-control" id="movMotivo" placeholder="Ej: Factura 001">
+                        </div>
+                        <button type="submit" class="btn btn-kardex w-100">Procesar Transacción</button>
                     </form>
                 </div>
             </div>
@@ -121,136 +267,154 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // URLs
         const API_URL = 'https://api-ferreteria-michea.onrender.com/api/';
+        let productosGlobal = [];
 
-        // Verificar Sesión
-        if (!localStorage.getItem('accessToken')) window.location.href = 'login.html';
+        document.addEventListener('DOMContentLoaded', () => { cargarDatos(); });
 
-        // CARGAR DATOS AL INICIO
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarProductos();
-            cargarCategorias();
-        });
-
-        // 1. OBTENER PRODUCTOS (GET)
-        async function cargarProductos() {
+        async function cargarDatos() {
             try {
-                const response = await fetch(`${API_URL}productos/`);
-                const productos = await response.json();
-                
-                const tbody = document.getElementById('tabla-productos');
-                tbody.innerHTML = ''; // Limpiar
+                const resCat = await fetch(API_URL + 'categorias/');
+                const cats = await resCat.json();
+                const sel = document.getElementById('prodCategoria');
+                sel.innerHTML = '';
+                cats.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.nombre}</option>`);
 
-                productos.forEach(p => {
-                    // Lógica visual para stock crítico
-                    const stockClass = p.stock < 5 ? 'text-danger fw-bold' : 'text-dark';
-                    const categoriaNombre = p.categoria_nombre || "Sin Categoría"; // Ajustar según tu API
+                const resProd = await fetch(API_URL + 'productos/');
+                productosGlobal = await resProd.json();
 
-                    const fila = `
-                        <tr>
-                            <td><span class="badge bg-light text-dark border">${p.sku}</span></td>
-                            <td class="fw-bold">${p.nombre}</td>
-                            <td><span class="badge bg-info bg-opacity-10 text-info">${categoriaNombre}</span></td>
-                            <td>$${p.precio.toLocaleString('es-CL')}</td>
-                            <td class="${stockClass}">${p.stock} un.</td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-outline-danger action-btn" onclick="eliminarProducto(${p.id})">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += fila;
-                });
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'No se pudo cargar el inventario', 'error');
+                renderizarTabla(productosGlobal);
+                llenarSelectMovimientos(productosGlobal);
+
+            } catch (e) { console.error("Error", e); }
+        }
+
+        function renderizarTabla(lista) {
+            const tbody = document.getElementById('tabla-productos');
+            tbody.innerHTML = '';
+
+
+            const filtroActivo = localStorage.getItem('filtroInventario');
+            let listaFiltrada = lista;
+
+            let alertBox = document.getElementById('alert-filtro');
+            if (!alertBox) {
+                alertBox = document.createElement('div');
+                alertBox.id = 'alert-filtro';
+                alertBox.className = 'alert alert-danger d-flex justify-content-between align-items-center mb-3 d-none';
+                alertBox.innerHTML = `
+                    <span><i class="fas fa-filter me-2"></i> Mostrando solo: <strong>Stock Crítico</strong></span>
+                    <button class="btn btn-sm btn-outline-danger" onclick="limpiarFiltro()">Ver Todo el Inventario</button>
+                `;
+                document.querySelector('.table-container').parentNode.insertBefore(alertBox, document.querySelector('.table-container'));
             }
+
+            if (filtroActivo === 'critico') {
+                listaFiltrada = lista.filter(p => p.stock <= 5);
+                alertBox.classList.remove('d-none');
+            } else {
+                alertBox.classList.add('d-none');
+            }
+            // --------------------------------------------------------
+
+            if (listaFiltrada.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No se encontraron productos con este criterio.</td></tr>';
+                return;
+            }
+
+
+            const formatoCLP = new Intl.NumberFormat('es-CL', {
+                style: 'currency',
+                currency: 'CLP',
+                maximumFractionDigits: 0 // Sin decimales
+            });
+
+            listaFiltrada.forEach(p => {
+                const stockColor = p.stock <= 5 ? '#ff4757' : '#2ed573';
+                const row = `
+                    <tr>
+                        <td><span class="badge" style="background-color: #2d4356; color: #fff">${p.sku}</span></td>
+                        <td class="fw-bold" style="color: #000;">${p.nombre}</td>
+                        <td><small style="color: #2c3e50">${p.categoria_nombre || 'General'}</small></td>
+                        <td class="fw-bold" style="color: #000000;">${formatoCLP.format(p.precio)}</td>
+                        <td class="text-center fw-bold" style="color: ${stockColor}; font-size: 1.1rem;">${p.stock}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm" style="color: #ff4757; border: 1px solid #ff4757;" onclick="borrar(${p.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                tbody.innerHTML += row;
+            });
         }
 
-        // 2. OBTENER CATEGORIAS (Para el Select)
-        async function cargarCategorias() {
-            try {
-                const res = await fetch(`${API_URL}categorias/`);
-                const categorias = await res.json();
-                const select = document.getElementById('prodCategoria');
-                select.innerHTML = '<option value="">Seleccione...</option>';
-                categorias.forEach(c => {
-                    select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
-                });
-            } catch (e) { console.error("Error categorias", e); }
+
+        window.limpiarFiltro = function () {
+            localStorage.removeItem('filtroInventario');
+            cargarDatos();
         }
 
-        // 3. CREAR PRODUCTO (POST)
-        document.getElementById('formProducto').addEventListener('submit', async (e) => {
+        function llenarSelectMovimientos(lista) {
+            const sel = document.getElementById('movProducto');
+            sel.innerHTML = '<option value="">Buscar producto...</option>';
+            lista.forEach(p => {
+                sel.innerHTML += `<option value="${p.id}">${p.sku} - ${p.nombre} (Stock: ${p.stock})</option>`;
+            });
+        }
+
+
+        document.getElementById('formMovimiento').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const nuevoProducto = {
-                nombre: document.getElementById('prodNombre').value,
-                sku: document.getElementById('prodSku').value,
-                precio: document.getElementById('prodPrecio').value,
-                stock: document.getElementById('prodStock').value,
-                categoria: document.getElementById('prodCategoria').value // Envía el ID
+            const movimiento = {
+                producto: document.getElementById('movProducto').value,
+                tipo: document.getElementById('movTipo').value,
+                cantidad: document.getElementById('movCantidad').value,
+                motivo: document.getElementById('movMotivo').value,
+                usuario: localStorage.getItem('username') || 'Admin'
             };
 
             try {
-                const response = await fetch(`${API_URL}productos/`, {
+                const res = await fetch(API_URL + 'movimientos/', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        // Si usaras autenticación real en backend, aquí iría el token
-                        // 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                    },
-                    body: JSON.stringify(nuevoProducto)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(movimiento)
                 });
 
-                if (response.ok) {
-                    Swal.fire('¡Guardado!', 'Producto agregado correctamente', 'success');
-                    cargarProductos(); // Recargar tabla
-                    document.getElementById('formProducto').reset(); // Limpiar form
-                    
-                    // Cerrar modal (truco bootstrap)
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalProducto'));
-                    modal.hide();
-                } else {
-                    Swal.fire('Error', 'Revisa los datos (SKU único, etc)', 'error');
-                }
-            } catch (error) {
-                Swal.fire('Error', 'Fallo de conexión', 'error');
-            }
+                if (res.ok) {
+                    Swal.fire({ title: '¡Éxito!', text: 'Stock actualizado.', icon: 'success', background: '#223442', color: '#fff' });
+                    document.getElementById('formMovimiento').reset();
+                    bootstrap.Modal.getInstance(document.getElementById('modalMovimiento')).hide();
+                    cargarDatos();
+                } else { Swal.fire('Error', 'Fallo al guardar', 'error'); }
+            } catch (error) { Swal.fire('Error', 'Error de red', 'error'); }
         });
 
-        // 4. ELIMINAR PRODUCTO (DELETE)
-        async function eliminarProducto(id) {
-            const result = await Swal.fire({
-                title: '¿Estás seguro?',
-                text: "No podrás revertir esto",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar'
-            });
 
-            if (result.isConfirmed) {
-                try {
-                    const res = await fetch(`${API_URL}productos/${id}/`, { method: 'DELETE' });
-                    if (res.ok) {
-                        Swal.fire('Eliminado', 'El producto ha sido borrado.', 'success');
-                        cargarProductos();
-                    } else {
-                        Swal.fire('Error', 'No se pudo eliminar', 'error');
-                    }
-                } catch (e) {
-                    Swal.fire('Error', 'Error de red', 'error');
-                }
+
+        function exportarExcel() {
+            const ws = XLSX.utils.json_to_sheet(productosGlobal);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+            XLSX.writeFile(wb, "Data_Export.xlsx");
+        }
+
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("Reporte Data Analytics - Ferreteria Michea", 14, 20);
+            const tableRows = [];
+            productosGlobal.forEach(p => tableRows.push([p.sku, p.nombre, `$${p.precio}`, p.stock]));
+            doc.autoTable({ head: [["SKU", "Item", "Price", "Stock"]], body: tableRows, startY: 30 });
+            doc.save("Reporte_PDF.pdf");
+        }
+
+        async function borrar(id) {
+            if (confirm("¿Eliminar item del catálogo?")) {
+                await fetch(API_URL + `productos/${id}/`, { method: 'DELETE' });
+                cargarDatos();
             }
         }
 
-        function cerrarSesion() {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        }
+        function cerrarSesion() { localStorage.clear(); window.location.href = 'login.html'; }
     </script>
 </body>
+
 </html>
