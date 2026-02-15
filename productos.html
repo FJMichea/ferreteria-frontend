@@ -211,6 +211,7 @@
                     </tbody>
                 </table>
             </div>
+            <div id="paginacion-container" class="d-flex justify-content-center w-100 mb-3"></div>
         </div>
     </div>
 
@@ -370,60 +371,122 @@
             } catch (e) { console.error("Error", e); }
         }
 
-        function renderizarTabla(lista) {
+        // --- VARIABLES DE PAGINACIÓN ---
+        let paginaActual = 1;
+        const itemsPorPagina = 10; // Muestra 10 productos por vista
+        let listaActualBusqueda = []; // Mantiene la lista para no perderla al cambiar de página 
+
+        function renderizarTabla(lista, resetPagina = false) {
+            if (resetPagina) paginaActual = 1;
+            listaActualBusqueda = lista;
+
             const tbody = document.getElementById('tabla-productos');
             tbody.innerHTML = '';
 
-
             const filtroActivo = localStorage.getItem('filtroInventario');
-            let listaFiltrada = lista; let alertBox = document.getElementById('alert-filtro');
+            let listaFiltrada = lista;
+
+            let alertBox = document.getElementById('alert-filtro');
             if (!alertBox) {
                 alertBox = document.createElement('div');
                 alertBox.id = 'alert-filtro';
                 alertBox.className = 'alert alert-danger d-flex justify-content-between align-items-center mb-3 d-none';
                 alertBox.innerHTML = `
-                <span><i class="fas fa-filter me-2"></i> Mostrando solo: <strong>Stock Crítico</strong></span>
-                <button class="btn btn-sm btn-outline-danger" onclick="limpiarFiltro()">Ver Todo el Inventario</button>
-            `;
+                    <span><i class="fas fa-filter me-2"></i> Mostrando solo: <strong>Stock Crítico</strong></span>
+                    <button class="btn btn-sm btn-outline-danger" onclick="limpiarFiltro()">Ver Todo el Inventario</button>
+                `;
                 document.querySelector('.table-container').parentNode.insertBefore(alertBox, document.querySelector('.table-container'));
-            } if (filtroActivo === 'critico') {
+            }
+
+            if (filtroActivo === 'critico') {
                 listaFiltrada = lista.filter(p => p.stock <= 5);
                 alertBox.classList.remove('d-none');
             } else {
                 alertBox.classList.add('d-none');
-            } if (listaFiltrada.length === 0) {
+            }
+
+            if (listaFiltrada.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No se encontraron productos con este criterio.</td></tr>';
+                document.getElementById('paginacion-container').innerHTML = '';
                 return;
             }
-            const formatoCLP = new Intl.NumberFormat('es-CL', {
-                style: 'currency', currency: 'CLP', maximumFractionDigits: 0
-            });
+
+            // --- CÁLCULO DE PÁGINAS ---
+            const totalPaginas = Math.ceil(listaFiltrada.length / itemsPorPagina);
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas; // Seguridad
+
+            const inicio = (paginaActual - 1) * itemsPorPagina;
+            const fin = inicio + itemsPorPagina;
+            const itemsAMostrar = listaFiltrada.slice(inicio, fin); // Cortamos el array 
+
+            const formatoCLP = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
             const currentUser = (localStorage.getItem('username') || '').toLowerCase();
-            const isAdmin = currentUser === 'admin'; listaFiltrada.forEach(p => {
+            const isAdmin = currentUser === 'admin';
+
+            itemsAMostrar.forEach(p => {
                 const stockColor = p.stock <= 5 ? '#ff4757' : '#2ed573';
-
-
                 const btnEliminar = isAdmin
                     ? `<button class="btn btn-sm" style="color: #ff4757; border: 1px solid #ff4757;" onclick="borrar(${p.id})" title="Eliminar Producto"><i class="fas fa-trash"></i></button>`
-                    : `<button class="btn btn-sm" style="color: #8ca3b8; border: 1px solid #2d4356; cursor: not-allowed;" title="Permiso denegado (Solo Admin)" disabled><i class="fas fa-lock"></i></button>`; const row = `
-                <tr>
-                    <td><span class="badge" style="background-color: #2d4356; color: #fff">${p.sku}</span></td>
-                    <td class="fw-bold" style="color: #000;">${p.nombre}</td>
-                    <td><small style="color: #8ca3b8">${p.categoria_nombre || 'General'}</small></td>
-                    <td class="fw-bold" style="color: #e2e8f0;">${formatoCLP.format(p.precio)}</td>
-                    <td class="text-center fw-bold" style="color: ${stockColor}; font-size: 1.1rem;">${p.stock}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm me-1" style="color: var(--accent-cyan); border: 1px solid var(--accent-cyan);" onclick="verHistorial(${p.id}, '${p.nombre}')" title="Ver Historial"><i class="fas fa-history"></i></button>
-                        ${btnEliminar}
-                    </td>
-                </tr>`;
+                    : `<button class="btn btn-sm" style="color: #8ca3b8; border: 1px solid #2d4356; cursor: not-allowed;" title="Permiso denegado" disabled><i class="fas fa-lock"></i></button>`;
+
+                const row = `
+                    <tr>
+                        <td><span class="badge" style="background-color: #2d4356; color: #fff">${p.sku}</span></td>
+                        <td class="fw-bold" style="color: #000;">${p.nombre}</td>
+                        <td><small style="color: #8ca3b8">${p.categoria_nombre || 'General'}</small></td>
+                        <td class="fw-bold" style="color: #e2e8f0;">${formatoCLP.format(p.precio)}</td>
+                        <td class="text-center fw-bold" style="color: ${stockColor}; font-size: 1.1rem;">${p.stock}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm me-1" style="color: var(--accent-cyan); border: 1px solid var(--accent-cyan);" onclick="verHistorial(${p.id}, '${p.nombre}')" title="Ver Historial"><i class="fas fa-history"></i></button>
+                            ${btnEliminar}
+                        </td>
+                    </tr>`;
                 tbody.innerHTML += row;
             });
+
+            renderizarPaginacion(totalPaginas);
         }
 
+        // --- CONTROLES DE NAVEGACIÓN ---
+        function renderizarPaginacion(totalPaginas) {
+            const container = document.getElementById('paginacion-container');
+            if (!container) return;
+            if (totalPaginas <= 1) { container.innerHTML = ''; return; } // Oculta si solo hay 1 página 
+
+            let html = `<nav><ul class="pagination pagination-sm mt-3 mb-1 shadow-sm">`;
+            html += `<li class="page-item ${paginaActual === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="event.preventDefault(); cambiarPagina(${paginaActual - 1})" style="background-color: var(--bg-card); border-color: #2d4356; color: var(--accent-cyan);">Anterior</a>
+                     </li>`;
+            html += `<li class="page-item disabled">
+                        <span class="page-link" style="background-color: #182631; border-color: #2d4356; color: var(--text-light);">Pág ${paginaActual} de ${totalPaginas}</span>
+                     </li>`;
+            html += `<li class="page-item ${paginaActual === totalPaginas ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="event.preventDefault(); cambiarPagina(${paginaActual + 1})" style="background-color: var(--bg-card); border-color: #2d4356; color: var(--accent-cyan);">Siguiente</a>
+                     </li>`;
+            html += `</ul></nav>`;
+            container.innerHTML = html;
+        }
+
+        function cambiarPagina(nuevaPagina) {
+            paginaActual = nuevaPagina;
+            renderizarTabla(listaActualBusqueda, false); // Mantiene el filtro de búsqueda al cambiar página
+        }
+
+        // --- BUSCADOR DINÁMICO EN TIEMPO REAL (ACTUALIZADO) ---
+        document.getElementById('buscadorInventario').addEventListener('input', (e) => {
+            const textoBuscado = e.target.value.toLowerCase();
+            const productosFiltrados = productosGlobal.filter(p => {
+                const nombre = p.nombre.toLowerCase();
+                const sku = p.sku.toLowerCase();
+                const categoria = (p.categoria_nombre || 'General').toLowerCase();
+                return nombre.includes(textoBuscado) || sku.includes(textoBuscado) || categoria.includes(textoBuscado);
+            });
+            renderizarTabla(productosFiltrados, true); // IMPORTANTE: true = vuelve a la página 1 al buscar
+        });
 
         window.limpiarFiltro = function () {
             localStorage.removeItem('filtroInventario');
+            paginaActual = 1; // Resetea la página al limpiar filtros
             cargarDatos();
         }
 
@@ -523,23 +586,6 @@
         }
 
         function cerrarSesion() { localStorage.clear(); window.location.href = 'login.html'; }
-
-        document.getElementById('buscadorInventario').addEventListener('input', (e) => {
-            const textoBuscado = e.target.value.toLowerCase();
-
-
-            const productosFiltrados = productosGlobal.filter(p => {
-                const nombre = p.nombre.toLowerCase();
-                const sku = p.sku.toLowerCase();
-                const categoria = (p.categoria_nombre || 'General').toLowerCase();
-
-
-                return nombre.includes(textoBuscado) || sku.includes(textoBuscado) || categoria.includes(textoBuscado);
-            });
-
-
-            renderizarTabla(productosFiltrados);
-        });
 
 
         async function verHistorial(id, nombre) {
