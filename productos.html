@@ -375,8 +375,13 @@
 
 
 
-        document.getElementById('formMovimiento').addEventListener('submit', async (e) => {
+        // --- LÓGICA DEL KARDEX CON VALIDACIÓN DE STOCK ESTRICTA ---
+        document.getElementById('formMovimiento').onsubmit = async (e) => {
             e.preventDefault();
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerText = 'Procesando...';
+            btn.disabled = true;
 
             const productoId = document.getElementById('movProducto').value;
             const tipo = document.getElementById('movTipo').value;
@@ -384,19 +389,23 @@
             const motivo = document.getElementById('movMotivo').value;
             const usuario = localStorage.getItem('username') || 'Admin';
 
+            // 🛡️ VALIDACIÓN ESTRICTA DE QUIEBRE DE STOCK
+            const productoSeleccionado = productosGlobal.find(p => p.id == productoId);
 
-            if (tipo === 'SALIDA') {
-                const productoSeleccionado = productosGlobal.find(p => p.id == productoId);
-                if (productoSeleccionado && cantidad > productoSeleccionado.stock) {
+            if (tipo === 'SALIDA' && productoSeleccionado) {
+                const stockActual = parseInt(productoSeleccionado.stock);
+                if (cantidad > stockActual) {
                     Swal.fire({
                         title: '¡Stock Insuficiente!',
-                        html: `Intentas retirar <b>${cantidad}</b> unidades, pero solo hay <b>${productoSeleccionado.stock}</b> en inventario.`,
-                        icon: 'warning',
+                        html: `Intentas retirar <b>${cantidad}</b> unidades, pero solo hay <b>${stockActual}</b> disponibles.`,
+                        icon: 'error',
                         background: '#223442',
                         color: '#ff4757',
                         confirmButtonColor: '#2d4356'
                     });
-                    return; // Detiene la ejecución, no envía nada al servidor
+                    btn.innerText = 'Procesar Transacción';
+                    btn.disabled = false;
+                    return; // 🛑 DETIENE TODO, NO ENVÍA AL BACKEND
                 }
             }
 
@@ -410,13 +419,20 @@
                 });
 
                 if (res.ok) {
-                    Swal.fire({ title: '¡Éxito!', text: 'Stock actualizado.', icon: 'success', background: '#223442', color: '#fff' });
+                    Swal.fire({ title: '¡Éxito!', text: 'Kardex actualizado.', icon: 'success', background: '#223442', color: '#fff' });
                     document.getElementById('formMovimiento').reset();
                     bootstrap.Modal.getInstance(document.getElementById('modalMovimiento')).hide();
-                    cargarDatos();
-                } else { Swal.fire('Error', 'Fallo al guardar', 'error'); }
-            } catch (error) { Swal.fire('Error', 'Error de red', 'error'); }
-        });
+                    cargarDatos(); // Recarga la tabla para reflejar el nuevo stock
+                } else {
+                    Swal.fire('Error', 'Fallo al guardar en el servidor', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No hay conexión con la API', 'error');
+            } finally {
+                btn.innerText = 'Procesar Transacción';
+                btn.disabled = false;
+            }
+        };
 
 
 
