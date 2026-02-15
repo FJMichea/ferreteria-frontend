@@ -173,6 +173,19 @@
                 </button>
             </div>
         </div>
+        <div class="row mb-3">
+            <div class="col-md-6 col-lg-4">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text"
+                        style="background-color: var(--bg-card); border-color: #2d4356; color: var(--accent-cyan);">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="buscadorInventario" class="form-control"
+                        placeholder="Buscar por Nombre, SKU o Categoría..."
+                        style="background-color: var(--bg-card); border-color: #2d4356; color: var(--text-light);">
+                </div>
+            </div>
+        </div>
 
         <div class="table-container">
             <div class="table-responsive">
@@ -414,6 +427,23 @@
         }
 
         function cerrarSesion() { localStorage.clear(); window.location.href = 'login.html'; }
+
+        document.getElementById('buscadorInventario').addEventListener('input', (e) => {
+            const textoBuscado = e.target.value.toLowerCase();
+
+
+            const productosFiltrados = productosGlobal.filter(p => {
+                const nombre = p.nombre.toLowerCase();
+                const sku = p.sku.toLowerCase();
+                const categoria = (p.categoria_nombre || 'General').toLowerCase();
+
+
+                return nombre.includes(textoBuscado) || sku.includes(textoBuscado) || categoria.includes(textoBuscado);
+            });
+
+
+            renderizarTabla(productosFiltrados);
+        });
     </script>
 </body>
 
