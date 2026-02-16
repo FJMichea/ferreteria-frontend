@@ -1,4 +1,4 @@
-# 🎨 ERP Ferretería Quilpuecito - Panel Web Analytics (Frontend)
+#  ERP Ferretería Quilpuecito - Panel Web Analytics (Frontend)
 
 Este repositorio contiene la Interfaz de Usuario (UI) Cliente del Sistema de Gestión de Ferretería. Diseñado bajo el enfoque "Mobile First" (Totalmente responsivo) y estilizado con una estética *Dark Analytics/Industrial* para un uso prolongado sin fatiga visual.
 
@@ -30,7 +30,7 @@ Al ser una arquitectura desacoplada, el Frontend no requiere compilación:
 1. Clona este repositorio.
 2. Abre el archivo `login.html` en cualquier navegador web moderno, o utiliza una extensión como *Live Server* en VS Code.
 
-## 🔮 Roadmap y Futuras Mejoras
+##  Roadmap y Futuras Mejoras
 El diseño modular de la interfaz permite futuras integraciones:
 1. **Módulo POS (Punto de Venta) para caja rápida.**
 2. **Generador automático de Órdenes de Compra en PDF (Auto-PO).**
@@ -38,4 +38,5 @@ El diseño modular de la interfaz permite futuras integraciones:
 
 ---
 *Desarrollado con  usabilidad web (UX/UI) y enfocado en resolver las problemáticas reales de control de inventario local.*
+
 **Desarrollado por:** Francisco Michea.
