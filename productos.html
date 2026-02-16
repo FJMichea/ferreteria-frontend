@@ -230,7 +230,7 @@
                     </span>
                     <input type="text" id="buscadorInventario" class="form-control"
                         placeholder="Buscar por Nombre, SKU o Categoría..."
-                        style="background-color: var(--bg-card); border-color: #2d4356; color: #ffffff !important;">
+                        style="background-color: #182631; border-color: #2d4356; color: #ffffff !important;">
                 </div>
             </div>
         </div>
@@ -269,19 +269,33 @@
                 </div>
                 <div class="modal-body">
                     <form id="formProducto">
-                        <div class="mb-2"><label class="small text-muted mb-1">Nombre</label><input type="text"
-                                class="form-control" id="prodNombre" required></div>
-                        <div class="mb-2"><label class="small text-muted mb-1">SKU</label><input type="text"
-                                class="form-control" id="prodSku" required></div>
-                        <div class="row">
-                            <div class="col-6 mb-2"><label class="small text-muted mb-1">Precio</label><input
-                                    type="number" class="form-control" id="prodPrecio" required></div>
-                            <div class="col-6 mb-2"><label class="small text-muted mb-1">Stock Inicial</label><input
-                                    type="number" class="form-control" id="prodStock" required></div>
+                        <input type="hidden" id="prodId">
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-muted);">SKU</label>
+                            <input type="text" class="form-control" id="prodSku" required
+                                style="background-color: #182631; color: #fff; border-color: #2d4356;">
                         </div>
-                        <div class="mb-4"><label class="small text-muted mb-1">Categoría</label><select
-                                class="form-select" id="prodCategoria" required></select></div>
-                        <button type="submit" class="btn btn-success w-100">Crear Registro</button>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-muted);">Nombre del Producto</label>
+                            <input type="text" class="form-control" id="prodNombre" required
+                                style="background-color: #182631; color: #fff; border-color: #2d4356;">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" style="color: var(--text-muted);">Categoría</label>
+                                <select class="form-select" id="prodCategoria" required
+                                    style="background-color: #182631; color: #fff; border-color: #2d4356;">
+                                    <option value="">Seleccione...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" style="color: var(--text-muted);">Precio Unitario ($)</label>
+                                <input type="number" class="form-control" id="prodPrecio" required
+                                    style="background-color: #182631; color: #fff; border-color: #2d4356;">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn w-100"
+                            style="background-color: #a55eea; color: #fff; font-weight: bold;">Guardar Producto</button>
                     </form>
                 </div>
             </div>
